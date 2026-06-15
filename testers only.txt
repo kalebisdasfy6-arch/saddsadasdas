@@ -72,35 +72,40 @@ local Window = Compkiller.new({
 	TextSize = isMobile() and 22 or 15, -- bigger text on mobile
 });
 
--- Mobile open/close button
-if isMobile() then
+-- Mobile open/close button (always show on touch devices)
+local isTouchDevice = UserInputService.TouchEnabled or isMobile()
+if isTouchDevice then
 	task.spawn(function()
+		local lp = game.Players.LocalPlayer
+		local playerGui = lp:WaitForChild("PlayerGui")
+
 		local mobileGui = Instance.new("ScreenGui")
 		mobileGui.Name = "OregonMobileToggle"
 		mobileGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 		mobileGui.ResetOnSpawn = false
-		mobileGui.Parent = game:GetService("CoreGui")
+		mobileGui.IgnoreGuiInset = true
+		mobileGui.Parent = playerGui
 
 		local button = Instance.new("TextButton")
 		button.Name = "MenuToggle"
-		button.Size = UDim2.new(0, 70, 0, 70)
-		button.Position = UDim2.new(1, -80, 0, 25)
+		button.Size = UDim2.new(0, 90, 0, 90)
+		button.Position = UDim2.new(1, -110, 0, 40)
 		button.AnchorPoint = Vector2.new(0, 0)
 		button.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 		button.TextColor3 = Color3.fromRGB(255, 255, 255)
 		button.Text = "CLOSE"
-		button.TextSize = 16
+		button.TextSize = 20
 		button.Font = Enum.Font.GothamBold
-		button.BackgroundTransparency = 0.2
+		button.BackgroundTransparency = 0.1
 		button.Parent = mobileGui
 
 		local corner = Instance.new("UICorner")
-		corner.CornerRadius = UDim.new(0, 14)
+		corner.CornerRadius = UDim.new(0, 18)
 		corner.Parent = button
 
 		local stroke = Instance.new("UIStroke")
 		stroke.Color = Color3.fromRGB(255, 255, 255)
-		stroke.Thickness = 2
+		stroke.Thickness = 3
 		stroke.Parent = button
 
 		local isOpen = true
@@ -124,6 +129,7 @@ if isMobile() then
 		end
 
 		button.MouseButton1Click:Connect(updateState)
+		print("Oregon mobile button created")
 	end)
 end
 
