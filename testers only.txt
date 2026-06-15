@@ -69,66 +69,55 @@ local Window = Compkiller.new({
 	Name = "oregon",
 	Keybind = MenuKey,
 	Logo = "rbxassetid://109948061273706",
-	TextSize = isMobile() and 22 or 15, -- bigger text on mobile
+	TextSize = isMobile() and 22 or 15,
 });
 
--- Mobile open/close button (always show on touch devices)
-local isTouchDevice = UserInputService.TouchEnabled or isMobile()
-if isTouchDevice then
+-- Mobile open/close button
+if Compkiller:_IsMobile() or UserInputService.TouchEnabled then
 	task.spawn(function()
 		local lp = game.Players.LocalPlayer
 		local playerGui = lp:WaitForChild("PlayerGui")
+
+		local old = playerGui:FindFirstChild("OregonMobileToggle")
+		if old then old:Destroy() end
 
 		local mobileGui = Instance.new("ScreenGui")
 		mobileGui.Name = "OregonMobileToggle"
 		mobileGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 		mobileGui.ResetOnSpawn = false
 		mobileGui.IgnoreGuiInset = true
+		mobileGui.DisplayOrder = 9999
 		mobileGui.Parent = playerGui
 
 		local button = Instance.new("TextButton")
 		button.Name = "MenuToggle"
-		button.Size = UDim2.new(0, 90, 0, 90)
-		button.Position = UDim2.new(1, -110, 0, 40)
+		button.Size = UDim2.new(0, 110, 0, 55)
+		button.Position = UDim2.new(1, -125, 0, 50)
 		button.AnchorPoint = Vector2.new(0, 0)
 		button.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 		button.TextColor3 = Color3.fromRGB(255, 255, 255)
-		button.Text = "CLOSE"
-		button.TextSize = 20
+		button.Text = "Close Menu"
+		button.TextSize = 18
 		button.Font = Enum.Font.GothamBold
-		button.BackgroundTransparency = 0.1
 		button.Parent = mobileGui
 
-		local corner = Instance.new("UICorner")
-		corner.CornerRadius = UDim.new(0, 18)
-		corner.Parent = button
+		Instance.new("UICorner", button).CornerRadius = UDim.new(0, 14)
 
 		local stroke = Instance.new("UIStroke")
 		stroke.Color = Color3.fromRGB(255, 255, 255)
-		stroke.Thickness = 3
+		stroke.Thickness = 2
 		stroke.Parent = button
 
 		local isOpen = true
-		local function updateState()
+		button.MouseButton1Click:Connect(function()
 			isOpen = not isOpen
-			button.Text = isOpen and "CLOSE" or "MENU"
-
 			pcall(function()
-				if Window.Toggle then
-					Window:Toggle()
-				elseif Window.SetVisible then
-					Window:SetVisible(isOpen)
-				elseif Window.Show and Window.Hide then
-					if isOpen then Window:Show() else Window:Hide() end
-				elseif typeof(Window) == "Instance" and Window:IsA("ScreenGui") then
-					Window.Enabled = isOpen
-				elseif typeof(Window) == "Instance" and Window:IsA("GuiObject") then
-					Window.Visible = isOpen
-				end
+				Window:SetVisible(isOpen)
 			end)
-		end
+			button.Text = isOpen and "Close Menu" or "Open Menu"
+			button.BackgroundColor3 = isOpen and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(255, 59, 48)
+		end)
 
-		button.MouseButton1Click:Connect(updateState)
 		print("Oregon mobile button created")
 	end)
 end
