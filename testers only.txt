@@ -53,96 +53,18 @@ local function isMobile()
 	return false
 end
 
--- Force BIG UI on any device by scaling everything 2.5x after creation
-local MOBILE_SCALE = 2.5
+-- Force BIG UI - set scale properties that Compkiller actually uses
+Compkiller.Scale.Mobile = UDim2.new(0, 750, 0, 650)
+Compkiller.Scale.TabOpen = 280
+Compkiller.Scale.TabClose = 140
 
 local MenuKey = "LeftAlt"
 local Window = Compkiller.new({
 	Name = "oregon",
 	Keybind = MenuKey,
 	Logo = "rbxassetid://109948061273706",
-	TextSize = 22,
+	TextSize = 24,
 });
-
--- ==========================================
--- FORCE BIG UI: Scale the window 2.5x after creation
--- ==========================================
-task.spawn(function()
-    task.wait(0.5)
-    pcall(function()
-        -- Method 1: Try Window:SetScale if available
-        if Window.SetScale then
-            Window:SetScale(MOBILE_SCALE)
-        end
-    end)
-    task.wait(0.3)
-    pcall(function()
-        -- Method 2: Try setting Scale directly on Window
-        Window.Scale = MOBILE_SCALE
-    end)
-    task.wait(0.3)
-    pcall(function()
-        -- Method 3: Find the main window container and add UIScale
-        for _, gui in pairs(game:GetService("CoreGui"):GetChildren()) do
-            if gui:IsA("ScreenGui") and (gui.Name:find("oregon") or gui.Name:find("Compkiller") or gui.Name:find("adonis")) then
-                for _, child in pairs(gui:GetDescendants()) do
-                    if child:IsA("Frame") and child.Name:find("Main") then
-                        local uiscale = Instance.new("UIScale")
-                        uiscale.Scale = MOBILE_SCALE
-                        uiscale.Parent = child
-                        break
-                    end
-                end
-                local uiscale = Instance.new("UIScale")
-                uiscale.Scale = MOBILE_SCALE
-                uiscale.Parent = gui
-                break
-            end
-        end
-    end)
-    task.wait(0.3)
-    pcall(function()
-        if Compkiller.SetScale then
-            Compkiller:SetScale(MOBILE_SCALE)
-        end
-    end)
-    task.wait(0.3)
-    pcall(function()
-        for _, gui in pairs(game:GetService("CoreGui"):GetChildren()) do
-            if gui:IsA("ScreenGui") and gui.Enabled then
-                local hasUI = false
-                for _, child in pairs(gui:GetDescendants()) do
-                    if child:IsA("Frame") and (child.Name:find("oregon") or child.Name:find("Window") or child.Name:find("Container")) then
-                        hasUI = true
-                        break
-                    end
-                end
-                if hasUI then
-                    local uiscale = Instance.new("UIScale")
-                    uiscale.Scale = MOBILE_SCALE
-                    uiscale.Parent = gui
-                end
-            end
-        end
-    end)
-    for i = 1, 5 do
-        task.wait(1)
-        pcall(function()
-            for _, gui in pairs(game:GetService("CoreGui"):GetChildren()) do
-                if gui:IsA("ScreenGui") and not gui:FindFirstChildWhichIsA("UIScale") then
-                    for _, child in pairs(gui:GetDescendants()) do
-                        if child:IsA("Frame") and (child.AbsoluteSize.X > 100 or child.AbsoluteSize.Y > 100) then
-                            local uiscale = Instance.new("UIScale")
-                            uiscale.Scale = MOBILE_SCALE
-                            uiscale.Parent = gui
-                            break
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
 
 -- Preload all custom images so they show up
 pcall(function()
