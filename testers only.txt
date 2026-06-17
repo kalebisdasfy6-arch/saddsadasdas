@@ -4290,7 +4290,7 @@ local function addTag(character)
     text.Size = UDim2.new(1, -28, 0, 30)
     text.Position = UDim2.new(0, 28, 0, 0)
     text.BackgroundTransparency = 1
-    text.Text = "discord.gg/oregonn"
+    text.Text = "discord.gg/oregonscripts"
     text.TextStrokeTransparency = 0
     text.TextScaled = true
     text.Font = Enum.Font.GothamBold
@@ -4301,7 +4301,7 @@ local function addTag(character)
     discordText.Size = UDim2.new(1, -28, 0, 20)
     discordText.Position = UDim2.new(0, 28, 0, 30)
     discordText.BackgroundTransparency = 1
-    discordText.Text = "discord.gg/oregonn"
+    discordText.Text = "discord.gg/oregonscripts"
     discordText.TextStrokeTransparency = 0.3
     discordText.TextScaled = true
     discordText.Font = Enum.Font.Gotham
@@ -4482,36 +4482,6 @@ local Settings = SettingTab:DrawSection({
 	Name = "UI Settings",
 });
 
-Settings:AddSlider({
-    Name = "UI Scale / Size",
-    Min = 50,
-    Max = 200,
-    Increment = 5,
-    Suffix = "%",
-    CurrentValue = 100,
-    Flag = "UIScaleSlider",
-    Callback = function(v)
-        pcall(function()
-            local mainFrame
-            if Window and Window.Root then
-                for _, child in ipairs(Window.Root:GetChildren()) do
-                    if child:IsA("Frame") then
-                        mainFrame = child
-                        break
-                    end
-                end
-            end
-            if mainFrame then
-                local uiScale = mainFrame:FindFirstChildOfClass("UIScale")
-                if not uiScale then
-                    uiScale = Instance.new("UIScale", mainFrame)
-                end
-                uiScale.Scale = v / 100
-            end
-        end)
-    end
-});
-
 Settings:AddToggle({
 	Name = "Alway Show Frame",
 	Default = false,
@@ -4680,168 +4650,126 @@ local ConfigUI = Window:DrawConfig({
 ConfigUI:Init();
 
 -- ==========================================
--- iPHONE UI TOGGLE (mobile + PC)
+-- PREMIUM MOBILE OREGON TOGGLE BUTTON
 -- ==========================================
 task.spawn(function()
-local mobileGui = Instance.new("ScreenGui")
-mobileGui.Name = "OregonToggle"
-mobileGui.ResetOnSpawn = false
-mobileGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-mobileGui.DisplayOrder = 99999
-pcall(function()
-    mobileGui.Parent = (gethui and gethui()) or game:GetService("CoreGui")
-end)
-if not mobileGui.Parent then
-    mobileGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-end
-
--- iPhone outer body
-local phoneChassis = Instance.new("Frame")
-phoneChassis.Size = UDim2.new(0, 68, 0, 130)
-phoneChassis.Position = UDim2.new(0, 8, 1, -145)
-phoneChassis.BackgroundColor3 = Color3.fromRGB(40, 40, 43)
-phoneChassis.BorderSizePixel = 0
-phoneChassis.Active = true
-phoneChassis.Parent = mobileGui
-
-local phoneCorner = Instance.new("UICorner")
-phoneCorner.CornerRadius = UDim.new(0, 22)
-phoneCorner.Parent = phoneChassis
-
--- Inner bezel
-local phoneBezel = Instance.new("Frame")
-phoneBezel.Size = UDim2.new(1, -4, 1, -4)
-phoneBezel.Position = UDim2.new(0, 2, 0, 2)
-phoneBezel.BackgroundColor3 = Color3.fromRGB(7, 7, 7)
-phoneBezel.BorderSizePixel = 0
-phoneBezel.Parent = phoneChassis
-
-local bezelCorner = Instance.new("UICorner")
-bezelCorner.CornerRadius = UDim.new(0, 20)
-bezelCorner.Parent = phoneBezel
-
--- Power button
-local phonePowerBtn = Instance.new("TextButton")
-phonePowerBtn.Size = UDim2.new(0, 4, 0, 26)
-phonePowerBtn.Position = UDim2.new(1, 0, 0.24, 0)
-phonePowerBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 30)
-phonePowerBtn.BorderSizePixel = 0
-phonePowerBtn.Text = ""
-phonePowerBtn.Parent = phoneChassis
-
--- Screen
-local phoneScreen = Instance.new("Frame")
-phoneScreen.Size = UDim2.new(1, -8, 1, -8)
-phoneScreen.Position = UDim2.new(0, 4, 0, 4)
-phoneScreen.BackgroundColor3 = Color3.fromRGB(10, 15, 10)
-phoneScreen.BorderSizePixel = 0
-phoneScreen.ClipsDescendants = true
-phoneScreen.Parent = phoneBezel
-
-local screenCorner = Instance.new("UICorner")
-screenCorner.CornerRadius = UDim.new(0, 18)
-screenCorner.Parent = phoneScreen
-
--- Dynamic Island
-local phoneIsland = Instance.new("Frame")
-phoneIsland.Size = UDim2.new(0, 36, 0, 10)
-phoneIsland.Position = UDim2.new(0.5, -18, 0, 4)
-phoneIsland.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-phoneIsland.ZIndex = 10
-phoneIsland.Parent = phoneScreen
-
-local islandCorner = Instance.new("UICorner")
-islandCorner.CornerRadius = UDim.new(1, 0)
-islandCorner.Parent = phoneIsland
-
--- Hub button (center of phone)
-local phoneHubBtn = Instance.new("TextButton")
-phoneHubBtn.Size = UDim2.new(0, 34, 0, 34)
-phoneHubBtn.Position = UDim2.new(0.5, -17, 0.5, -17)
-phoneHubBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-phoneHubBtn.Text = "Close"
-phoneHubBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-phoneHubBtn.Font = Enum.Font.GothamBold
-phoneHubBtn.TextSize = 9
-phoneHubBtn.ZIndex = 12
-phoneHubBtn.Parent = phoneScreen
-
-local hubCorner = Instance.new("UICorner")
-hubCorner.CornerRadius = UDim.new(1, 0)
-hubCorner.Parent = phoneHubBtn
-
-local hubStroke = Instance.new("UIStroke")
-hubStroke.Color = Color3.fromRGB(255, 255, 255)
-hubStroke.Thickness = 1.5
-hubStroke.Transparency = 0.3
-hubStroke.Parent = phoneHubBtn
-
--- Home indicator
-local phoneHomeBar = Instance.new("Frame")
-phoneHomeBar.Size = UDim2.new(0, 56, 0, 4)
-phoneHomeBar.Position = UDim2.new(0.5, -28, 1, -8)
-phoneHomeBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-phoneHomeBar.BackgroundTransparency = 0.3
-phoneHomeBar.BorderSizePixel = 0
-phoneHomeBar.ZIndex = 15
-phoneHomeBar.Parent = phoneScreen
-
-local homeBarCorner = Instance.new("UICorner")
-homeBarCorner.CornerRadius = UDim.new(1, 0)
-homeBarCorner.Parent = phoneHomeBar
-
--- Toggle function
-local uiVisible = true
-local function toggleOregonUI()
-    uiVisible = not uiVisible
+    local mobileGui = Instance.new("ScreenGui")
+    mobileGui.Name = "OregonMobileToggleMenu"
+    mobileGui.ResetOnSpawn = false
+    mobileGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    mobileGui.DisplayOrder = 99999
     pcall(function()
-        for _, win in pairs(Compkiller.Windows or {}) do
-            win.Enabled = uiVisible
+        mobileGui.Parent = (gethui and gethui()) or game:GetService("CoreGui")
+    end)
+    if not mobileGui.Parent then
+        mobileGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    end
+
+    local toggleButton = Instance.new("ImageButton")
+    toggleButton.Size = UDim2.new(0, 68, 0, 68)
+    toggleButton.Position = UDim2.new(0, 12, 0.5, -34)
+    toggleButton.Image = "rbxassetid://109948061273706" -- Official oregon scripts watermark
+    toggleButton.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+    toggleButton.BackgroundTransparency = 0.15
+    toggleButton.ScaleType = Enum.ScaleType.Stretch
+    toggleButton.Active = true
+    toggleButton.Parent = mobileGui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 18)
+    corner.Parent = toggleButton
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(0, 200, 0)
+    stroke.Thickness = 3
+    stroke.Parent = toggleButton
+
+    local glow = Instance.new("Frame")
+    glow.Size = UDim2.new(1, 12, 1, 12)
+    glow.Position = UDim2.new(0, -6, 0, -6)
+    glow.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+    glow.BackgroundTransparency = 0.7
+    glow.BorderSizePixel = 0
+    glow.ZIndex = -1
+    Instance.new("UICorner", glow).CornerRadius = UDim.new(0, 24)
+    glow.Parent = toggleButton
+
+    local textBadge = Instance.new("TextLabel")
+    textBadge.Size = UDim2.new(1, 20, 0, 20)
+    textBadge.Position = UDim2.new(0, -10, 1, 4)
+    textBadge.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+    textBadge.BackgroundTransparency = 0.2
+    textBadge.Text = "MENU"
+    textBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBadge.Font = Enum.Font.GothamBold
+    textBadge.TextSize = 11
+    textBadge.BorderSizePixel = 0
+    textBadge.Parent = toggleButton
+    Instance.new("UICorner", textBadge).CornerRadius = UDim.new(0, 6)
+    local badgeStroke = Instance.new("UIStroke", textBadge)
+    badgeStroke.Color = Color3.fromRGB(0, 200, 0)
+    badgeStroke.Thickness = 1.5
+
+    -- Continuous Real-Time Rainbow Animation
+    task.spawn(function()
+        local hue = 0
+        while toggleButton.Parent do
+            hue = (hue + 0.008) % 1
+            local rbColor = Color3.fromHSV(hue, 1, 1)
+            stroke.Color = rbColor
+            glow.BackgroundColor3 = rbColor
+            textBadge.TextColor3 = rbColor
+            badgeStroke.Color = rbColor
+            task.wait(0.03)
         end
     end)
-    phoneHubBtn.Text = uiVisible and "Close" or "Open"
-    phoneHubBtn.BackgroundColor3 = uiVisible and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(255, 59, 48)
-end
 
-phoneHubBtn.MouseButton1Click:Connect(toggleOregonUI)
-
--- Power button locks/unlocks the phone screen
-local phoneScreenOn = true
-phonePowerBtn.MouseButton1Click:Connect(function()
-    phoneScreenOn = not phoneScreenOn
-    phoneScreen.Visible = phoneScreenOn
-end)
-
--- Draggable phone
-local phoneDragging, phoneDragStart, phoneStartPos
-phoneChassis.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        phoneDragging = true
-        phoneDragStart = input.Position
-        phoneStartPos = phoneChassis.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                phoneDragging = false
+    -- Toggle Function
+    local uiVisible = true
+    local function toggleOregonUI()
+        uiVisible = not uiVisible
+        pcall(function()
+            for _, win in pairs(Compkiller.Windows or {}) do
+                win.Enabled = uiVisible
             end
         end)
+        textBadge.Text = uiVisible and "CLOSE" or "MENU"
+        textBadge.BackgroundColor3 = uiVisible and Color3.fromRGB(18, 18, 22) or Color3.fromRGB(150, 20, 20)
     end
-end)
 
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if phoneDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-        local delta = input.Position - phoneDragStart
-        phoneChassis.Position = UDim2.new(
-            phoneStartPos.X.Scale, phoneStartPos.X.Offset + delta.X,
-            phoneStartPos.Y.Scale, phoneStartPos.Y.Offset + delta.Y
-        )
-    end
-end)
+    toggleButton.MouseButton1Click:Connect(toggleOregonUI)
 
--- Keyboard shortcut: RightShift to toggle
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.RightShift or input.KeyCode == Enum.KeyCode.Insert then
-        toggleOregonUI()
-    end
-end)
+    -- Flawless Hardware-Accelerated Mobile Dragging
+    local UserInputService = game:GetService("UserInputService")
+    local dragging, dragStart, startPos
+    toggleButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = toggleButton.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            toggleButton.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    -- Keyboard shortcut: RightShift or Insert to toggle
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.RightShift or input.KeyCode == Enum.KeyCode.Insert then
+            toggleOregonUI()
+        end
+    end)
 end)
