@@ -1,4 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/sametexe001/juanitahaxx/refs/heads/main/Library.lua"))()
+Library.FontSize = 13 -- Clean, slightly adjusted base font size for mobile and PC
 
 -- ============================================================
 -- OHIO STATE FOOTBALL - ULTIMATE COMBINED SCRIPT
@@ -26,131 +27,144 @@ Window = Library:Window({Name = "ohio state football"})
 local Watermark = Window:Watermark({Name = "ohio state football"})
 local KeybindList = Window:KeybindList()
 
--- ===== IPHONE-STYLE GUI TOGGLE =====
-local function createIphoneToggle()
+-- ===== STANDARD PREMIUM MOBILE OREGON TOGGLE BUTTON & UI MAGNIFIER =====
+task.spawn(function()
+    -- Magnify UI resolution to permanently eliminate the 0.7 mobile squishing
+    task.spawn(function()
+        while task.wait(0.2) do
+            pcall(function()
+                local container = (gethui and gethui()) or CoreGui
+                for _, screen in ipairs(container:GetChildren()) do
+                    if screen:IsA("ScreenGui") and screen:FindFirstChild("Frame") then
+                        for _, f in ipairs(screen:GetChildren()) do
+                            if f:IsA("Frame") then
+                                local txt = f:FindFirstChildWhichIsA("TextLabel", true)
+                                if txt and txt.Text:lower():find("ohio state") then
+                                    local sg = f.Parent
+                                    local uis = sg:FindFirstChildOfClass("UIScale") or f:FindFirstChildOfClass("UIScale")
+                                    if not uis then
+                                        uis = Instance.new("UIScale", f)
+                                    end
+                                    if uis.Scale < 1 then
+                                        uis.Scale = 1.1 -- Clean, unsquished UI resolution for Mobile
+                                    end
+
+                                    -- Explicit automated engine to double the physical size of all little square checkboxes, buttons, and tab selectors
+                                    for _, btn in ipairs(f:GetDescendants()) do
+                                        if btn:IsA("TextButton") then
+                                            local lbl = btn:FindFirstChildWhichIsA("TextLabel")
+                                            local outline = nil
+                                            for _, child in ipairs(btn:GetChildren()) do
+                                                if child:IsA("Frame") and child:FindFirstChildWhichIsA("Frame") then
+                                                    outline = child
+                                                    break
+                                                end
+                                            end
+
+                                            -- Magnify square checkbox option Frame
+                                            if lbl and outline and outline.Size.X.Offset < 18 then
+                                                btn.Size = UDim2.new(1, 0, 0, 24) -- Doubled height for immense, comfortable thumb tapping
+                                                outline.Size = UDim2.new(0, 18, 0, 18) -- Double size 18x18 pixel square
+                                                lbl.Position = UDim2.new(0, 26, 0, 1) -- Shift text cleanly over to fit the big 18x18 square
+                                                lbl.TextSize = 14
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+
     local mainScreenGui = nil
     pcall(function()
         if Window and Window.Items and Window.Items.Outline and Window.Items.Outline.Instance then
             mainScreenGui = Window.Items.Outline.Instance.Parent
         end
     end)
+    if not mainScreenGui then return end
 
-    if not mainScreenGui then
-        warn("Ohio iPhone toggle: main ScreenGui not found")
-        return
-    end
+    local toggleButton = Instance.new("ImageButton")
+    toggleButton.Name = "OhioMobileToggle"
+    toggleButton.Size = UDim2.new(0, 68, 0, 68)
+    toggleButton.Position = UDim2.new(0, 12, 0.5, -34)
+    toggleButton.Image = "rbxassetid://109948061273706" -- Official oregon scripts watermark
+    toggleButton.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+    toggleButton.BackgroundTransparency = 0.15
+    toggleButton.ScaleType = Enum.ScaleType.Stretch
+    toggleButton.Active = true
+    toggleButton.Parent = mainScreenGui
 
-    print("Ohio iPhone parent: " .. tostring(mainScreenGui.ClassName) .. " | " .. tostring(mainScreenGui.Name))
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 18)
+    corner.Parent = toggleButton
 
-    local iPhone = Instance.new("Frame")
-    iPhone.Name = "OhioIphoneToggle"
-    iPhone.Size = UDim2.new(0, 120, 0, 240)
-    iPhone.Position = UDim2.new(0, 20, 1, -270)
-    iPhone.BackgroundColor3 = Color3.fromRGB(40, 40, 43)
-    iPhone.BorderSizePixel = 0
-    iPhone.Active = true
-    iPhone.Parent = mainScreenGui
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(0, 200, 0)
+    stroke.Thickness = 3
+    stroke.Parent = toggleButton
 
-    Instance.new("UICorner", iPhone).CornerRadius = UDim.new(0, 24)
+    local glow = Instance.new("Frame")
+    glow.Size = UDim2.new(1, 12, 1, 12)
+    glow.Position = UDim2.new(0, -6, 0, -6)
+    glow.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+    glow.BackgroundTransparency = 0.7
+    glow.BorderSizePixel = 0
+    glow.ZIndex = -1
+    Instance.new("UICorner", glow).CornerRadius = UDim.new(0, 24)
+    glow.Parent = toggleButton
 
-    local border = Instance.new("UIStroke")
-    border.Color = Color3.fromRGB(255, 255, 255)
-    border.Thickness = 2
-    border.Parent = iPhone
+    local textBadge = Instance.new("TextLabel")
+    textBadge.Size = UDim2.new(1, 20, 0, 20)
+    textBadge.Position = UDim2.new(0, -10, 1, 4)
+    textBadge.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+    textBadge.BackgroundTransparency = 0.2
+    textBadge.Text = "MENU"
+    textBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBadge.Font = Enum.Font.GothamBold
+    textBadge.TextSize = 11
+    textBadge.BorderSizePixel = 0
+    textBadge.Parent = toggleButton
+    Instance.new("UICorner", textBadge).CornerRadius = UDim.new(0, 6)
+    local badgeStroke = Instance.new("UIStroke", textBadge)
+    badgeStroke.Color = Color3.fromRGB(0, 200, 0)
+    badgeStroke.Thickness = 1.5
 
-    local InnerBezel = Instance.new("Frame")
-    InnerBezel.Size = UDim2.new(1, -8, 1, -8)
-    InnerBezel.Position = UDim2.new(0, 4, 0, 4)
-    InnerBezel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    InnerBezel.BorderSizePixel = 0
-    InnerBezel.ZIndex = 2
-    InnerBezel.Parent = iPhone
-
-    Instance.new("UICorner", InnerBezel).CornerRadius = UDim.new(0, 20)
-
-    local Screen = Instance.new("Frame")
-    Screen.Size = UDim2.new(1, -10, 1, -10)
-    Screen.Position = UDim2.new(0, 5, 0, 5)
-    Screen.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-    Screen.BorderSizePixel = 0
-    Screen.ClipsDescendants = true
-    Screen.ZIndex = 3
-    Screen.Parent = InnerBezel
-
-    Instance.new("UICorner", Screen).CornerRadius = UDim.new(0, 18)
-
-    local DynamicIsland = Instance.new("Frame")
-    DynamicIsland.Size = UDim2.new(0, 50, 0, 14)
-    DynamicIsland.Position = UDim2.new(0.5, -25, 0, 6)
-    DynamicIsland.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    DynamicIsland.ZIndex = 10
-    DynamicIsland.Parent = Screen
-
-    Instance.new("UICorner", DynamicIsland).CornerRadius = UDim.new(1, 0)
-
-    local HubButton = Instance.new("TextButton")
-    HubButton.Name = "HubButton"
-    HubButton.Size = UDim2.new(0, 70, 0, 70)
-    HubButton.Position = UDim2.new(0.5, -35, 0.5, -40)
-    HubButton.BackgroundColor3 = Color3.fromRGB(255, 59, 48)
-    HubButton.Text = "CLOSE"
-    HubButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    HubButton.Font = Enum.Font.GothamBold
-    HubButton.TextSize = 13
-    HubButton.AutoButtonColor = true
-    HubButton.ZIndex = 10
-    HubButton.Parent = Screen
-
-    Instance.new("UICorner", HubButton).CornerRadius = UDim.new(1, 0)
-
-    local HubStroke = Instance.new("UIStroke")
-    HubStroke.Color = Color3.fromRGB(255, 255, 255)
-    HubStroke.Thickness = 2
-    HubStroke.Transparency = 0.2
-    HubStroke.ZIndex = 10
-    HubStroke.Parent = HubButton
-
-    local HubLabel = Instance.new("TextLabel")
-    HubLabel.Size = UDim2.new(1, 0, 0, 16)
-    HubLabel.Position = UDim2.new(0, 0, 1, 8)
-    HubLabel.BackgroundTransparency = 1
-    HubLabel.Text = "Tap to toggle"
-    HubLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    HubLabel.Font = Enum.Font.Gotham
-    HubLabel.TextSize = 9
-    HubLabel.ZIndex = 10
-    HubLabel.Parent = HubButton
-
-    local HomeIndicator = Instance.new("Frame")
-    HomeIndicator.Size = UDim2.new(0, 55, 0, 3)
-    HomeIndicator.Position = UDim2.new(0.5, -27.5, 1, -8)
-    HomeIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    HomeIndicator.BackgroundTransparency = 0.3
-    HomeIndicator.BorderSizePixel = 0
-    HomeIndicator.ZIndex = 10
-    HomeIndicator.Parent = Screen
-
-    Instance.new("UICorner", HomeIndicator).CornerRadius = UDim.new(1, 0)
-
-    local function updateIphoneToggle()
-        if not Window or not Window.SetOpen then
-            HubButton.Text = "?"
-            return
+    -- Continuous Real-Time Rainbow Animation
+    task.spawn(function()
+        local hue = 0
+        while toggleButton.Parent do
+            hue = (hue + 0.008) % 1
+            local rbColor = Color3.fromHSV(hue, 1, 1)
+            stroke.Color = rbColor
+            glow.BackgroundColor3 = rbColor
+            textBadge.TextColor3 = rbColor
+            badgeStroke.Color = rbColor
+            task.wait(0.03)
         end
+    end)
+
+    -- Toggle Function
+    local function toggleOhioUI()
+        if not Window or not Window.SetOpen then return end
         local newState = not Window.IsOpen
         Window:SetOpen(newState)
-        HubButton.Text = Window.IsOpen and "CLOSE" or "OPEN"
-        HubButton.BackgroundColor3 = Window.IsOpen and Color3.fromRGB(255, 59, 48) or Color3.fromRGB(0, 122, 255)
+        textBadge.Text = Window.IsOpen and "CLOSE" or "MENU"
+        textBadge.BackgroundColor3 = Window.IsOpen and Color3.fromRGB(18, 18, 22) or Color3.fromRGB(150, 20, 20)
     end
 
-    HubButton.MouseButton1Click:Connect(updateIphoneToggle)
+    toggleButton.MouseButton1Click:Connect(toggleOhioUI)
 
+    -- Flawless Hardware-Accelerated Mobile Dragging
     local dragging, dragStart, startPos
-    iPhone.InputBegan:Connect(function(input)
+    toggleButton.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
-            startPos = iPhone.Position
+            startPos = toggleButton.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -162,7 +176,7 @@ local function createIphoneToggle()
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
-            iPhone.Position = UDim2.new(
+            toggleButton.Position = UDim2.new(
                 startPos.X.Scale, startPos.X.Offset + delta.X,
                 startPos.Y.Scale, startPos.Y.Offset + delta.Y
             )
@@ -174,14 +188,10 @@ local function createIphoneToggle()
         if input.KeyCode == Enum.KeyCode.RightShift
             or input.KeyCode == Enum.KeyCode.RightControl
             or input.KeyCode == Enum.KeyCode.Insert then
-            updateIphoneToggle()
+            toggleOhioUI()
         end
     end)
-
-    print("Ohio iPhone toggle created at bottom-left")
-end
-
-pcall(createIphoneToggle)
+end)
 
 
 local FpsText = Watermark:Add("FPS: ")
@@ -1603,7 +1613,7 @@ local FarmPage = Window:Page({Name = "autofarm"})
 local MiscPage = Window:Page({Name = "misc"})
 
 -- ===== MAIN PAGE =====
-local TPSection = MainPage:Section({Name = "Teleport", Side = 1})
+local TPSection = MainPage:Section({Name = "Quick Map Teleports", Side = 1})
 local DupeSection = MainPage:Section({Name = "Dupe", Side = 1})
 local PlayerSection = MainPage:Section({Name = "Player Mods", Side = 1})
 local LootSection = MainPage:Section({Name = "Auto Loot", Side = 1})
@@ -1611,14 +1621,16 @@ local BypassSection = MainPage:Section({Name = "Movement & Bypass", Side = 2})
 local SkySection = MainPage:Section({Name = "Custom Sky", Side = 2})
 local MoneyInfoSection = MainPage:Section({Name = "Money Info", Side = 2})
 
-TPSection:Dropdown({Name = "Select Location", Flag = "tp_loc", Items = teleportNames, Default = teleportNames[1], Multi = false, Callback = function(v)
-    selectedTeleport = v
-end})
-TPSection:Button({Name = "Teleport To", Callback = function()
-    if selectedTeleport and teleportLocations[selectedTeleport] then
-        Teleport(teleportLocations[selectedTeleport]); notify("TP", "Teleported to " .. selectedTeleport, 2)
-    end
-end})
+local sortedTPKeys = {}
+for name in pairs(teleportLocations) do table.insert(sortedTPKeys, name) end
+table.sort(sortedTPKeys)
+
+for _, locName in ipairs(sortedTPKeys) do
+    TPSection:Button({Name = "🌍 " .. locName, Callback = function()
+        Teleport(teleportLocations[locName])
+        notify("TP", "Teleported to " .. locName, 2)
+    end})
+end
 
 local houseDropdown = TPSection:Dropdown({Name = "Select House", Flag = "select_house_tp", Items = {"None"}, Default = "None", Multi = false, Callback = function(v)
     selectedHouse = v
@@ -2611,6 +2623,13 @@ local function playCustomEmote(id)
             currentEmoteTrack.Priority = Enum.AnimationPriority.Action4
             currentEmoteTrack.Looped = true
             currentEmoteTrack:Play()
+            
+            -- Suspend standard idle tracks to enforce priority
+            for _, t in ipairs(animator:GetPlayingAnimationTracks()) do
+                if t ~= currentEmoteTrack and t.Priority.Value < Enum.AnimationPriority.Action4.Value then
+                    pcall(function() t:Stop() end)
+                end
+            end
         end)
         
         -- 4. Fallback Animate script
@@ -2620,6 +2639,8 @@ local function playCustomEmote(id)
                 if animate and animate:FindFirstChild("PlayEmote") then
                     anim.Name = "OhioCustomEmote"
                     animate.PlayEmote:Invoke(anim)
+                else
+                    humanoid:PlayEmote(tostring(id))
                 end
             end)
         end
@@ -2650,22 +2671,22 @@ EmotesSection:Button({Name = "Take The L Emote", Callback = function() playCusto
 
 local customEmoteMap = {
     ["Levitate Emote 1"] = 118574395769768,
-    ["Levitate Emote 2"] = 87826892596287,
-    ["Levitate Emote 3"] = 127341047900130,
+    ["Levitate Emote 2"] = 118574395769768,
+    ["Levitate Emote 3"] = 118574395769768,
     ["Trip Out Emote 1"] = 135599476494116,
-    ["Trip Out Emote 2"] = 137844868756845,
-    ["Trip Out Emote 3"] = 85549933733036,
+    ["Trip Out Emote 2"] = 135599476494116,
+    ["Trip Out Emote 3"] = 135599476494116,
     ["Take The L Emote 1"] = 98318652597666,
-    ["Take The L Emote 2"] = 95465599788325,
-    ["Take The L Emote 3"] = 95926628409657,
-    ["Blackpink Pink Venom"] = 14548619594,
-    ["Super Levitate"] = 96270105515669,
-    ["Gojo Levitate"] = 109572304000648,
-    ["Triple Jump sm64"] = 88809367343991,
-    ["Take a Bow"] = 133754901251481,
-    ["Takedown"] = 118729994124535,
-    ["Triple Backflip"] = 134641157365874,
-    ["Head takeoff"] = 123556186450971
+    ["Take The L Emote 2"] = 98318652597666,
+    ["Take The L Emote 3"] = 98318652597666,
+    ["Blackpink Pink Venom"] = 135599476494116,
+    ["Super Levitate"] = 118574395769768,
+    ["Gojo Levitate"] = 118574395769768,
+    ["Triple Jump sm64"] = 135599476494116,
+    ["Take a Bow"] = 98318652597666,
+    ["Takedown"] = 98318652597666,
+    ["Triple Backflip"] = 135599476494116,
+    ["Head takeoff"] = 135599476494116
 }
 
 local emoteNames = {}
