@@ -226,13 +226,7 @@ local function Teleport(cframe)
     getgenv().SwimMethod = true
     humanoid:ChangeState(0)
     repeat task.wait(0.0001) until not LocalPlayer:GetAttribute("LastACPos")
-    
-    if typeof(cframe) == "CFrame" then
-        hrp.CFrame = cframe
-    else
-        hrp.CFrame = CFrame.new(cframe)
-    end
-    
+    hrp.CFrame = cframe
     task.wait(0.1); humanoid:ChangeState(2)
     getgenv().SwimMethod = false
 end
