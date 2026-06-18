@@ -2296,9 +2296,15 @@ task.spawn(function()
 end)
 
 local uiVisible = true
+Library.MenuKeybind = "None" -- Disable the library's internal laggy tweening toggle
+
 local function toggleUI()
     uiVisible = not uiVisible
-    pcall(function() Window:SetOpen(uiVisible) end)
+    pcall(function()
+        if Window and Window.Elements and Window.Elements["MainFrame"] then
+            Window.Elements["MainFrame"].Instance.Visible = uiVisible
+        end
+    end)
     textBadge.Text = uiVisible and "CLOSE" or "MENU"
     textBadge.BackgroundColor3 = uiVisible and Color3.fromRGB(18, 18, 22) or Color3.fromRGB(150, 20, 20)
 end
@@ -2325,10 +2331,7 @@ UserInputService.InputChanged:Connect(function(input)
         toggleButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
-UserInputService.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.RightShift or input.KeyCode == Enum.KeyCode.RightControl or input.KeyCode == Enum.KeyCode.Insert then toggleUI() end
-end)
+
 
 
 
@@ -2876,12 +2879,10 @@ Library:Init()
     task.spawn(function()
     task.wait(0.2)
     if MainTab and typeof(MainTab.Select) == "function" then MainTab:Select() end
-    local CoreGui = game:GetService("CoreGui")
-    local uiScreen = CoreGui:FindFirstChild("Thugsense") or CoreGui:FindFirstChildWhichIsA("ScreenGui")
-    if uiScreen then
-        for _, obj in ipairs(uiScreen:GetDescendants()) do
-            if obj:IsA("TextLabel") and obj.Text:match("miani football") then obj.RichText = true end
+    pcall(function()
+        if Window and Window.Elements and Window.Elements["Title"] then
+            Window.Elements["Title"].Instance.RichText = true
         end
-    end
+    end)
 end)
 
