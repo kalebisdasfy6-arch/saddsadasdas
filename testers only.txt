@@ -13,7 +13,7 @@ end
 local Window = Library:Window({
     Name = "miani football  |  [v2.6]  |  License: <font color='#FFAA00'>Lifetime</font>  |  <font color='#55FF00'>Premium User</font>",
     
-    FadeSpeed = 0.2
+    FadeSpeed = 0.0
 })
 
 local Watermark = Library:Watermark("miani football")
@@ -29,6 +29,27 @@ FarmingTab = Window:Page({Name = "Farming",  Columns = 2, Subtabs = false})
 AimingTab = Window:Page({Name = "Aiming",   Columns = 2, Subtabs = false})
 VisualsTab = Window:Page({Name = "Visuals",  Columns = 2, Subtabs = false})
 SettingsTab = Library:CreateSettingsPage(Window, Watermark, KeybindList)
+
+-- Optimize tab switching lag
+for _, page in ipairs(Window.Pages) do
+    page.Turn = function(self, Bool)
+        if self.Active == Bool then return end
+        self.Active = Bool
+        
+        if Bool then 
+            self.Elements["Page"].Instance.Visible = true
+            self.Elements["Text"].Instance.TextColor3 = Library.Theme.Accent
+            self.Elements["Text"].Instance.TextTransparency = 0
+            self.Elements["Hide"].Instance.Visible = true
+        else
+            self.Elements["Page"].Instance.Visible = false
+            self.Elements["Text"].Instance.TextColor3 = Library.Theme.Text
+            self.Elements["Text"].Instance.TextTransparency = 0.5
+            self.Elements["Hide"].Instance.Visible = false
+        end
+    end
+end
+
 
 
 -- ============================================================================
@@ -155,6 +176,65 @@ end
 
 -- ============================================================================
 -- UTILITY FUNCTIONS
+local loadedEmoteCache = {}
+local currentEmoteTrack = nil
+local function playCustomEmote(id)
+    task.spawn(function()
+        local character = LocalPlayer.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+        local animator = humanoid and humanoid:FindFirstChildOfClass("Animator")
+        if not animator then return end
+        if currentEmoteTrack then pcall(function() currentEmoteTrack:Stop() end) end
+        
+        local anim = loadedEmoteCache[id]
+        if not anim then
+            local success, objects = pcall(function()
+                return game:GetObjects("rbxassetid://" .. tostring(id))
+            end)
+            if success and objects and #objects > 0 then
+                local item = objects[1]
+                if item:IsA("Animation") then
+                    anim = item
+                else
+                    anim = item:FindFirstChildWhichIsA("Animation", true)
+                end
+            end
+            if not anim then
+                anim = Instance.new("Animation")
+                anim.AnimationId = "rbxassetid://" .. tostring(id)
+            end
+            loadedEmoteCache[id] = anim
+        end
+        
+        pcall(function()
+            currentEmoteTrack = animator:LoadAnimation(anim)
+            currentEmoteTrack.Priority = Enum.AnimationPriority.Action4
+            currentEmoteTrack.Looped = true
+            currentEmoteTrack:Play()
+        end)
+        sendNotification("Emote", "Playing emote!")
+    end)
+end
+
+local customEmoteMap = {
+    ["Take The L"] = 98318652597666,
+    ["Trip Out"] = 135599476494116,
+    ["Levitate"] = 118574395769768,
+    ["Triple Jump"] = 95465599788325,
+    ["Take a Bow"] = 95926628409657,
+    ["Takedown"] = 137844868756845,
+    ["Triple Backflip"] = 85549933733036,
+    ["Head takeoff"] = 87826892596287,
+    ["Wave"] = 3576686446,
+    ["Point"] = 3576823880,
+    ["Dance"] = 3576720708,
+    ["Laugh"] = 3576777185,
+    ["Cheer"] = 3576738018
+}
+local emoteNames = {}
+for name in pairs(customEmoteMap) do table.insert(emoteNames, name) end
+table.sort(emoteNames)
+
 local CarFly = { Enabled = false, Speed = 150 }
 local carFlyConnection
 
@@ -1020,6 +1100,8 @@ task.spawn(function()
         if car.PrimaryPart then car:SetPrimaryPartCFrame(target.Character.HumanoidRootPart.CFrame) end
     end
 end)
+
+
 
 task.spawn(function()
     while task.wait(1) do
@@ -2744,6 +2826,17 @@ task.spawn(function()
         end
     end
 end)
+
+    local EmotesSection = PlayerTab:Section({Name = "Custom Emotes", Side = 2})
+    EmotesSection:Button({Name = "Stop Emote", Callback = function()
+        if currentEmoteTrack then pcall(function() currentEmoteTrack:Stop() end); currentEmoteTrack = nil end
+        sendNotification("Emote", "Stopped emote")
+    end})
+    EmotesSection:Dropdown({Name = "Select Emote", Flag = "EmoteChoice", Items = emoteNames, Default = "Take The L", Callback = function(v) flags["EmoteChoice"] = v end})
+    EmotesSection:Button({Name = "Play Selected Emote", Callback = function()
+        local choice = flags["EmoteChoice"] or "Take The L"
+        if customEmoteMap[choice] then playCustomEmote(customEmoteMap[choice]) end
+    end})
 
 VehicleSection = PlayerTab:Section({Name = "Vehicle Settings", Side = 2})
     VehicleSection:Toggle({Name = "Car Fly", Flag = "CarFlyEnabled", Default = false, Callback = function(state) if state then StartCarFly() else StopCarFly() end end})
